@@ -1,4 +1,5 @@
 import React from 'react';
+import Beercalc from 'beercalc_js';
 
 var Abv = React.createClass({
   componentDidMount() {
@@ -8,7 +9,10 @@ var Abv = React.createClass({
     return {
       og: '',
       fg: '',
-      abv: ''
+      abv: '',
+      abw: '',
+      cal: '',
+      attenuation: ''
     };
   },
   changeOG(e) {
@@ -19,7 +23,14 @@ var Abv = React.createClass({
   },
   getABV(e) {
     // use more accurate abv formula
-    this.setState({ abv: "ABV: " + ((76.08 * (this.state.og-this.state.fg) / (1.775-this.state.og)) * (this.state.fg / 0.794)).toFixed(2)+"%" });
+    this.setState(
+      { 
+        abv: "ABV: " + ((76.08 * (this.state.og-this.state.fg) / (1.775-this.state.og)) * (this.state.fg / 0.794)).toFixed(2)+"%",
+        abw: "ABW: " + (Beercalc.abw(this.state.og, this.state.fg)).toFixed(2)+"%",
+        cal: "Calories: " + (Beercalc.calories(this.state.og, this.state.fg)).toFixed(2)+" in 12oz",
+        attenuation: "Attenuation: " + (Beercalc.attenuation(this.state.og, this.state.fg)*100).toFixed(2)+"%"
+      }
+    );
   },
   render() {
     return (
@@ -35,6 +46,11 @@ var Abv = React.createClass({
         </fieldset>
         <button onClick={this.getABV}>Get ABV</button>
         <h3>{this.state.abv}</h3>
+        <h3>{this.state.abw}</h3>
+        <div>{this.state.cal}<br/>
+          {this.state.extract}<br/>
+          {this.state.attenuation}
+        </div>
       </div>
     );
   }
